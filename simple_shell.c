@@ -26,6 +26,9 @@ int matches_keyword(const char *input, const char *keyword)
 
 int main(int argc, char **argv)
 {
+	char *input;
+	ssize_t read = 0, size = 0;
+
 	char *exit_word = "exit";
 	
 	/* bc first input is $ */
@@ -33,10 +36,6 @@ int main(int argc, char **argv)
 	{
 		exit_word = argv[1];
 	}
-
-	char *input;
-	size_t read = 0;
-	size_t size = 0;
 
 	printf("($) ");
 
