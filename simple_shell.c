@@ -1,82 +1,123 @@
+#include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
 
-/**
- * matches_keyword - copying input string to compare to keyword
- * @input: input word
- * @keyword: word used to compare
- *
- * Return: 1 if success, 0 otherwise
- */
-int matches_keyword(const char *input, const char *keyword)
+char *read_line(void);
+void looping(void);
+char **split_line(char *input);
+int execve_wait(char *command, char *name);
+
+void main(void)
 {
-	int i = 0;
 
-	/* compare chars one by one */
-	while (keyword[i] != '\0')
-	{
-		if (input[i] != keyword[i])
-		{
-			return (0);
-		}
-		i++;
-	}
+	looping();
 
-	/* if other chars after keyword, not correct */
-	if (input[i] == '\n' || input[i] == '\0')
-	{
-		return (1);
-	}
-
-	return (0);
+	exit(EXIT_SUCCESS);
 }
 
-/**
- * main - reads function input and ouputs string
- * @argc: number of arguments
- * @argv: array of strings
- *
- * Return: 1 on sucess, 0 on failure
- */
-int main(int argc, char **argv)
+void looping(void)
 {
 	char *input;
-	ssize_t read = 0;
-	size_t size = 0;
+	char **args;
+	int status;
+	char *name = "./hsh";
 
-	char *exit_word = "exit";
-
-	/* bc first input is $ */
-	if (argc > 1)
+	while (1)
 	{
-		exit_word = argv[1];
+		if (isatty(STDIN_FILENO))
+		{
+			printf("($) ");
+		}
+
+		input = read_line();
+		args = split_line(input);
+		status = execve_wait(args[0], name);
 	}
 
-	printf("($) ");
+	printf("\n");
+	exit(EXIT_SUCCESS);
+}
 
-	/* as long as input is not failure, get line to print */
-	read = getline(&input, &size, stdin);
+char *read_line(void)
+{
+	char *input = NULL;
+	ssize_t read = 0;
+	ssize_t buffer = 0;
+
+	read = getline(&input, &buffer, stdin);
 	if (read == -1)
 	{
-		printf("Error");
 		free(input);
-		return (0);
+		printf("\n");
+		exit(EXIT_SUCCESS);
 	}
 
-	/* call func to see if exit word matches */
-	if (matches_keyword(input, exit_word))
-	{
-		free(input);
-		return (0);
-	}
-
-	printf("%s", input);
-
-	free(input);
-
-	/* call recursion unless exit */
-	main(argc, argv);
-
-	return (1);
+	return (input);
 }
+
+char **split_line(char *input)
+{
+	int bufsize = 64;
+	int position = 0;
+	char **array = malloc(bufsize *sizeof(char *));
+	char *token;
+
+	if (array == NULL)
+	{
+		printf("failiure");
+		exit(EXIT_FAILURE);
+	}
+
+	token = strtok(input, " \n");
+	while (token != NULL)
+	{
+		array[position] = token;
+		position++;
+
+		token = strtok(NULL, " \n");
+	}
+
+	array[position] = NULL;
+	return (array);
+
+}
+
+int execve_wait(char *command, char *name)
+{
+        pid_t child_pid;
+        int status;
+        char *args[2];
+
+        args[0] = command; /* eg. /bin/ls */
+        args[1] = NULL; /* null terminator */
+
+        /* splts into 2 copies */
+        child_pid = fork();
+
+        /* fork fails */
+        if (child_pid == -1)
+        {
+                perror("Error:");
+                return (1);
+        }
+        /* execve */
+        else if (child_pid == 0)
+        {
+                /* pathname, arguments, envioroment */
+                if (execve(args[0], args, environ) == -1)
+                {
+                        perror(name);
+                        exit(1);
+                }
+        }
+        /* parent runs wait here */
+        else
+        {
+                wait(&status);
+        }
+        return (0);
+}
+
