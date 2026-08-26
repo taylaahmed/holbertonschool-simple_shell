@@ -34,6 +34,9 @@ void looping(void)
 		input = read_line();
 		args = split_line(input);
 		execve_wait(args[0], name);
+
+		free(args);
+		free(input);
 	}
 
 	exit(EXIT_SUCCESS);
