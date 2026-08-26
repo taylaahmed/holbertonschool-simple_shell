@@ -10,19 +10,18 @@ void looping(void);
 char **split_line(char *input);
 int execve_wait(char *command, char *name);
 
-void main(void)
+int main(void)
 {
 
 	looping();
 
-	exit(EXIT_SUCCESS);
+	return (0);
 }
 
 void looping(void)
 {
 	char *input;
 	char **args;
-	int status;
 	char *name = "./hsh";
 
 	while (1)
@@ -34,7 +33,7 @@ void looping(void)
 
 		input = read_line();
 		args = split_line(input);
-		status = execve_wait(args[0], name);
+		execve_wait(args[0], name);
 	}
 
 	printf("\n");
@@ -45,7 +44,7 @@ char *read_line(void)
 {
 	char *input = NULL;
 	ssize_t read = 0;
-	ssize_t buffer = 0;
+	size_t buffer = 0;
 
 	read = getline(&input, &buffer, stdin);
 	if (read == -1)

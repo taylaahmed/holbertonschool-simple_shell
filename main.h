@@ -10,6 +10,6 @@
 extern char **environ;
 
 int execve_wait(char *command, char *name);
-void main(void);
+int main(void);
 
 #endif
