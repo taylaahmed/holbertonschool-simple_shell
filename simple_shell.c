@@ -32,8 +32,6 @@ void looping(void)
 
 		input = read_line();
 		args = split_line(input);
-		printf("command: %s\n", args[0]);
-		printf("argument: %s\n", args[1]);
 		
 		execve_wait(args);
 		
