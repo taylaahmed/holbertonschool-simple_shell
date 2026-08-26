@@ -32,8 +32,10 @@ void looping(void)
 
 		input = read_line();
 		args = split_line(input);
-		
-		execve_wait(args);
+		if (args[0] != NULL)
+		{
+			execve_wait(args);
+		}
 		
 		free(args);
 		free(input);
