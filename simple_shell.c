@@ -8,7 +8,7 @@
 char *read_line(void);
 void looping(void);
 char **split_line(char *input);
-int execve_wait(char *command, char *name);
+int execve_wait(char **args);
 
 int main(void)
 {
@@ -22,7 +22,6 @@ void looping(void)
 {
 	char *input;
 	char **args;
-	char *name = "./hsh";
 
 	while (1)
 	{
@@ -33,8 +32,11 @@ void looping(void)
 
 		input = read_line();
 		args = split_line(input);
-		execve_wait(args[0], name);
-
+		printf("command: %s\n", args[0]);
+		printf("argument: %s\n", args[1]);
+		
+		execve_wait(args);
+		
 		free(args);
 		free(input);
 	}
@@ -85,14 +87,10 @@ char **split_line(char *input)
 
 }
 
-int execve_wait(char *command, char *name)
+int execve_wait(char **args)
 {
         pid_t child_pid;
         int status;
-        char *args[2];
-
-        args[0] = command; /* eg. /bin/ls */
-        args[1] = NULL; /* null terminator */
 
         /* splts into 2 copies */
         child_pid = fork();
@@ -109,7 +107,7 @@ int execve_wait(char *command, char *name)
                 /* pathname, arguments, envioroment */
                 if (execve(args[0], args, environ) == -1)
                 {
-                        perror(name);
+                        perror(args[0]);
                         exit(1);
                 }
         }

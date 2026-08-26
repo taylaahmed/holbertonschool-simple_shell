@@ -9,7 +9,7 @@
 
 extern char **environ;
 
-int execve_wait(char *command, char *name);
+int execve_wait(char **args);
 int main(void);
 
 #endif
