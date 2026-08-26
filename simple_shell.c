@@ -6,43 +6,49 @@
 #include <sys/wait.h>
 
 char *read_line(void);
-void looping(void);
 char **split_line(char *input);
 int execve_wait(char **args);
 
+/**
+ * main - reads input and sends calls other functions.
+ *
+ * Return: 0 on sucess
+ */
+
 int main(void)
-{
-
-	looping();
-
-	return (0);
-}
-
-void looping(void)
 {
 	char *input;
 	char **args;
 
+	/* continue while not 0 */
 	while (1)
 	{
+		/* checks if interactive file */
 		if (isatty(STDIN_FILENO))
-		{
 			printf("($) ");
-		}
 
+		/* call functions */
 		input = read_line();
 		args = split_line(input);
+
+		/* check if command is empty string/null, call execve func */
 		if (args[0] != NULL)
-		{
 			execve_wait(args);
-		}
-		
+
 		free(args);
 		free(input);
 	}
+	/* exit sucessful */
+	exit(0);
 
-	exit(EXIT_SUCCESS);
+	return (0);
 }
+
+/**
+ * read_line - reads input and checks for end of file command
+ *
+ * Return: input
+ */
 
 char *read_line(void)
 {
@@ -51,71 +57,97 @@ char *read_line(void)
 	size_t buffer = 0;
 
 	read = getline(&input, &buffer, stdin);
+
+	/* if end of file, ctrl D */
 	if (read == -1)
 	{
 		free(input);
-		exit(EXIT_SUCCESS);
+		exit(0);
 	}
 
 	return (input);
 }
 
+/**
+ * split_line - splits input lines into seperate strings
+ * @input: input line
+ *
+ * Return: the new array of split strings
+ */
 char **split_line(char *input)
 {
-	int bufsize = 64;
-	int position = 0;
-	char **array = malloc(bufsize *sizeof(char *));
+	int buf_size = 64;
+	int index = 0;
+
+	/* malloc size of buffer */
+	char **array = malloc(buf_size * sizeof(char *));
+
+	/* separate word */
 	char *token;
 
 	if (array == NULL)
 	{
 		printf("failiure");
-		exit(EXIT_FAILURE);
+		exit(1); /* exit failure */
 	}
 
+	/* splits input from new line/space */
 	token = strtok(input, " \n");
+
+	/* putting token name into correct index */
 	while (token != NULL)
 	{
-		array[position] = token;
-		position++;
+		array[index] = token;
+		index++;
 
+		/* pick up where left off in same line */
 		token = strtok(NULL, " \n");
 	}
 
-	array[position] = NULL;
+	/* add null at end of array */
+	array[index] = NULL;
 	return (array);
 
 }
 
+/**
+ * execve_wait - forks program into parent and child,
+ * having the option to call other functions or wait
+ * @args: the split strings in each index
+ *
+ * Return: 0 on sucess
+ */
+
 int execve_wait(char **args)
 {
-        pid_t child_pid;
-        int status;
+	pid_t child_pid;
+	int status;
 
-        /* splts into 2 copies */
-        child_pid = fork();
+	/* splts into 2 copies */
+	child_pid = fork();
 
-        /* fork fails */
-        if (child_pid == -1)
-        {
-                perror("Error:");
-                return (1);
-        }
-        /* execve */
-        else if (child_pid == 0)
-        {
-                /* pathname, arguments, envioroment */
-                if (execve(args[0], args, environ) == -1)
-                {
-                        perror(args[0]);
-                        exit(1);
-                }
-        }
-        /* parent runs wait here */
-        else
-        {
-                wait(&status);
-        }
-        return (0);
+	/* fork fails */
+	if (child_pid == -1)
+	{
+		perror("Error");
+		return (1);
+	}
+
+	/* execve */
+	else if (child_pid == 0)
+	{
+		/* pathname, arguments, enviroment */
+		if (execve(args[0], args, environ) == -1)
+		{
+			perror(args[0]);
+			exit(1);
+		}
+	}
+
+	/* parent runs wait here */
+	else
+	{
+		wait(&status);
+	}
+	return (0);
 }
-
