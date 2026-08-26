@@ -5,10 +5,6 @@
 #include <string.h>
 #include <sys/wait.h>
 
-char *read_line(void);
-char **split_line(char *input);
-int execve_wait(char **args);
-
 /**
  * main - reads input and sends calls other functions.
  *
@@ -30,6 +26,7 @@ int main(void)
 		/* call functions */
 		input = read_line();
 		args = split_line(input);
+		find_path(args[0]);
 
 		/* check if command is empty string/null, call execve func */
 		if (args[0] != NULL)
