@@ -49,7 +49,6 @@ char *read_line(void)
 	if (read == -1)
 	{
 		free(input);
-		printf("\n");
 		exit(EXIT_SUCCESS);
 	}
 
