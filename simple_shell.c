@@ -36,7 +36,6 @@ void looping(void)
 		execve_wait(args[0], name);
 	}
 
-	printf("\n");
 	exit(EXIT_SUCCESS);
 }
 
