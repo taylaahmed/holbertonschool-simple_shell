@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	char *input, **args, *path;
 	char *exit_word = "exit";
 	int compare;
-	int status = 0, count = 0;
+	int count = 0;
 
 	(void)argc;
 
@@ -61,7 +61,6 @@ int main(int argc, char **argv)
 				else
 				{
 					fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
-					status = 127;
 					free(path);
 				}
 			}
@@ -69,7 +68,7 @@ int main(int argc, char **argv)
 		free(args);
 		free(input);
 	}
-	exit(status);
+	_exit(127);
 	return (0);
 }
 
