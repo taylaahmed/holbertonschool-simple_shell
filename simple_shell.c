@@ -14,13 +14,12 @@
 
 int main(int argc, char **argv)
 {
-	char *input;
+	char *input, **args, *path;
 	char *exit_word = "exit";
-	char **args;
-	char *path;
 	int compare;
-
 	(void)argc;
+
+
 
 	/* if SIG_IGN, then signal is ignored */
 	signal(SIGINT, SIG_IGN);
@@ -42,13 +41,12 @@ int main(int argc, char **argv)
 			free(input);
 			exit(0);
 		}
-		
+
 		if (args[0] != NULL)
 		{
 			if (access(args[0], F_OK | X_OK) == 0)
 			{
 				execve_wait(args[0], args, argv[0]);
-				free(path);
 			}
 			else
 			{
@@ -64,9 +62,7 @@ int main(int argc, char **argv)
 					free(path);
 				}
 			}
-	
 		}
-		
 		free(args);
 		free(input);
 	}
@@ -136,7 +132,7 @@ char **split_line(char *input)
 	array[index] = NULL;
 	return (array);
 
-} 
+}
 
 /**
  * execve_wait - forks program into parent and child,
