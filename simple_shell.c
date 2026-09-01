@@ -185,7 +185,7 @@ int execve_wait(char *path, char **args, char *name)
 		wait(&status);
 
 		if (WIFEXITED(status))
-			return (WIFEXITED(status));
+			return (WEXITSTATUS(status));
 	}
 	return (status);
 }
