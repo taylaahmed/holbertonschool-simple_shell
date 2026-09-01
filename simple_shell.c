@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 		{
 			free(args);
 			free(input);
-			exit(0);
+			exit(2);
 		}
 
 		if (args[0] != NULL)
