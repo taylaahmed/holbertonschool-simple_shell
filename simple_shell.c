@@ -37,13 +37,18 @@ int main(int argc, char **argv)
 		compare = strcmp(input, exit_word);
 
 		if (compare == 0)
+		{
+			free(args);
+			free(input);
 			exit(0);
+		}
 		
 		if (args[0] != NULL)
 		{
 			if (access(args[0], F_OK | X_OK) == 0)
 			{
 				execve_wait(args[0], args, argv[0]);
+				free(path);
 			}
 			else
 			{
@@ -51,6 +56,7 @@ int main(int argc, char **argv)
 				if (path != NULL)
 				{
 					execve_wait(path, args, argv[0]);
+					free(path);
 				}
 				else
 				{

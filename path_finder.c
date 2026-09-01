@@ -64,12 +64,12 @@ char *find_path(char *command)
 char *get_path(void)
 {
 	char **env;
-
+	int path_length = 5;
 	env = environ;
 
 	while (*env != NULL)
 	{
-		if (strncmp(*env, "PATH=", 5) == 0)
+		if (strncmp(*env, "PATH=", path_length) == 0)
 		{
 			return(*env + 5);
 		}
