@@ -14,6 +14,10 @@ char *find_path(char *command)
 	char *concat;
 
 	path = get_path();
+
+	if (path == NULL || path[i] == '\0')
+		return (NULL);
+
 	while (path[i] != '\0')
 	{
 		i++;
@@ -66,6 +70,9 @@ char *get_path(void)
 	char **env;
 	int path_length = 5;
 	env = environ;
+
+	if (env == NULL)
+		return (NULL);
 
 	while (*env != NULL)
 	{
