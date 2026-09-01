@@ -66,9 +66,8 @@ int main(int argc, char **argv)
 			path = find_path(args[0]);
 				if (path != NULL)
 				{
-					execve_wait(path, args, argv[0]);
+					status = execve_wait(path, args, argv[0]);
 					free(path);
-					status = 0;
 				}
 				else
 				{
@@ -184,9 +183,10 @@ int execve_wait(char *path, char **args, char *name)
 	/* parent runs wait here */
 	else
 	{
-		waitpid(child_pid, &status, 0);
+		wait(&status);
+
 		if (WIFEXITED(status))
-			return (WIFEXITED(status));
+			status = (WIFEXITED(status));
 	}
-	return (0);
+	return (status);
 }
