@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	char *exit_word = "exit";
 	int compare;
 	int count = 0;
-
+	int status = 0;
 	(void)argc;
 
 	/* if SIG_IGN, then signal is ignored */
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 		input = read_line();
 
 		if (input == NULL)
-			exit(127);
+			exit(status);
 
 		count++;
 		args = split_line(input);
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 		{
 			free(args);
 			free(input);
-			exit(count);
+			exit(status);
 		}
 
 		if (args[0] != NULL)
@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 			if (access(args[0], F_OK | X_OK) == 0)
 			{
 				execve_wait(args[0], args, argv[0]);
+				status = 0;
 			}
 			else
 			{
@@ -60,19 +61,20 @@ int main(int argc, char **argv)
 				{
 					execve_wait(path, args, argv[0]);
 					free(path);
+					status = 0;
 				}
 				else
 				{
 	 				fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
 					free(path);
+					status = 127;
 				}
 			}
 		}
 		free(args);
 		free(input);
 	}
-	exit(127);
-	return (127);
+	return (status);
 }
 
 /**
