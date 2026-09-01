@@ -34,16 +34,26 @@ int main(int argc, char **argv)
 		/* call functions */
 		input = read_line();
 		args = split_line(input);
-		path = find_path(args[0]);
-
+		if (args[0] != NULL)
+		{
+			if (access(args[0], F_OK | X_OK) == 0)
+			{
+				execve_wait(args[0], args, argv[0]);
+			}
+			else
+			{
+				path = find_path(args[0]);
+				execve_wait(path, args, argv[0]);
+			}
+	
+		}
+		
 		compare = strcmp(input, exit_word);
 
 		if (compare == 0)
 			exit(0);
 
 		/* check if command is empty string/null, call execve func */
-		if (args[0] != NULL)
-			execve_wait(path, args, argv[0]);
 
 		free(args);
 		free(input);
