@@ -68,8 +68,8 @@ int main(int argc, char **argv)
 		}
 		free(args);
 		free(input);
-		exit(status);
 	}
+	exit(status);
 	return (0);
 }
 
