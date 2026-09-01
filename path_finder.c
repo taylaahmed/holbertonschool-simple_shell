@@ -48,11 +48,16 @@ char *find_path(char *command)
 		strcat(concat, command);
 
 		if (access(concat, F_OK | X_OK) == 0)
+		{
+			free(path_copy);
 			return (concat);
+		}
 
+		free(concat);
 		directory = strtok(NULL, ":");
 	}
 
+	free(path_copy);
 	return (NULL);
 }
 
