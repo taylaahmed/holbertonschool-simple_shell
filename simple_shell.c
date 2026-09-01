@@ -38,7 +38,6 @@ int main(int argc, char **argv)
 		count++;
 		args = split_line(input);
 	
-
 		compare = strcmp(input, exit_word);
 		if (compare == 0)
 		{
@@ -49,10 +48,18 @@ int main(int argc, char **argv)
 
 		if (args[0] != NULL)
 		{
-			if (access(args[0], F_OK | X_OK) == 0)
+			if (strchr(args[0], '/') != NULL)
 			{
-				execve_wait(args[0], args, argv[0]);
-				status = 0;
+				if (access(args[0], F_OK | X_OK) == 0)
+				{
+					execve_wait(args[0], args, argv[0]);
+					status = 0;
+				}
+				else
+				{
+					fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
+					status = 127;
+				}
 			}
 			else
 			{
@@ -66,7 +73,6 @@ int main(int argc, char **argv)
 				else
 				{
 	 				fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
-					free(path);
 					status = 127;
 				}
 			}
@@ -119,7 +125,6 @@ char **split_line(char *input)
 
 	if (array == NULL)
 	{
-		printf("failiure");
 		exit(127); /* exit failure */
 	}
 
@@ -153,7 +158,7 @@ char **split_line(char *input)
 int execve_wait(char *path, char **args, char *name)
 {
 	pid_t child_pid;
-	int status;
+	int status = 0;
 
 	/* splts into 2 copies */
 	child_pid = fork();
@@ -172,14 +177,16 @@ int execve_wait(char *path, char **args, char *name)
 		if (execve(path, args, environ) == -1)
 		{
 			perror(name);
-			exit(127);
+			_exit(127);
 		}
 	}
 
 	/* parent runs wait here */
 	else
 	{
-		wait(&status);
+		waitpid(child_pid, &status, 0);
+		if (WIFEXITED(status))
+			return (WIFEXITED(status));
 	}
 	return (0);
 }

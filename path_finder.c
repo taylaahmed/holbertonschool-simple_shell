@@ -27,8 +27,7 @@ char *find_path(char *command)
 	path_copy = malloc(i + 1);
 	if (path_copy == 0)
 	{
-		printf("failiure");
-		exit(1);
+		return (NULL);
 	}
 
 	i = 0;
@@ -46,6 +45,11 @@ char *find_path(char *command)
 	{
 		/* + 2 = for / and \0 */
 		concat = malloc(strlen(directory) + strlen(command) + 2);
+		if (concat == NULL)
+		{
+			free(path_copy);
+			return (NULL);
+		}
 
 		strcpy(concat, directory);
 		strcat(concat, "/");
@@ -68,7 +72,6 @@ char *find_path(char *command)
 char *get_path(void)
 {
 	char **env;
-	int path_length = 5;
 	env = environ;
 
 	if (env == NULL)
@@ -76,7 +79,7 @@ char *get_path(void)
 
 	while (*env != NULL)
 	{
-		if (strncmp(*env, "PATH=", path_length) == 0)
+		if (strncmp(*env, "PATH=", 5) == 0)
 		{
 			return(*env + 5);
 		}
