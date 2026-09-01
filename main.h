@@ -9,14 +9,11 @@
 
 extern char **environ;
 
-int execve_wait(char **args);
-int main(void);
 char *read_line(void);
-void looping(void);
 char **split_line(char *input);
-int execve_wait(char **args);
-void find_path(char *command);
+int execve_wait(char *path, char **args, char *name);
+char *find_path(char *command);
 char *get_path(void);
-int compare_string(const char *env_path, const char *path);
+/*int compare_string(const char *env_path, const char *path); */
 
 #endif

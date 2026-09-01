@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 /**
  * main - reads input and sends calls other functions.
@@ -11,12 +12,19 @@
  * Return: 0 on sucess
  */
 
-int main(void)
+int main(int argc, char **argv)
 {
 	char *input;
+	char *exit_word = "exit";
 	char **args;
+	char *path;
+	int compare;
 
-	/* continue while not 0 */
+	(void)argc;
+
+	/* if SIG_IGN, then signal is ignored */
+	signal(SIGINT, SIG_IGN);
+
 	while (1)
 	{
 		/* checks if interactive file */
@@ -26,18 +34,20 @@ int main(void)
 		/* call functions */
 		input = read_line();
 		args = split_line(input);
-		find_path(args[0]);
+		path = find_path(args[0]);
+
+		compare = strcmp(input, exit_word);
+
+		if (compare == 0)
+			exit(0);
 
 		/* check if command is empty string/null, call execve func */
 		if (args[0] != NULL)
-			execve_wait(args);
+			execve_wait(path, args, argv[0]);
 
 		free(args);
 		free(input);
 	}
-	/* exit sucessful */
-	exit(0);
-
 	return (0);
 }
 
@@ -75,12 +85,11 @@ char **split_line(char *input)
 {
 	int buf_size = 64;
 	int index = 0;
+	char **array;
+	char *token;
 
 	/* malloc size of buffer */
-	char **array = malloc(buf_size * sizeof(char *));
-
-	/* separate word */
-	char *token;
+	array = malloc(buf_size * sizeof(char *));
 
 	if (array == NULL)
 	{
@@ -105,7 +114,7 @@ char **split_line(char *input)
 	array[index] = NULL;
 	return (array);
 
-}
+} 
 
 /**
  * execve_wait - forks program into parent and child,
@@ -115,7 +124,7 @@ char **split_line(char *input)
  * Return: 0 on sucess
  */
 
-int execve_wait(char **args)
+int execve_wait(char *path, char **args, char *name)
 {
 	pid_t child_pid;
 	int status;
@@ -126,7 +135,7 @@ int execve_wait(char **args)
 	/* fork fails */
 	if (child_pid == -1)
 	{
-		perror("Error");
+		perror(name);
 		return (1);
 	}
 
@@ -134,9 +143,9 @@ int execve_wait(char **args)
 	else if (child_pid == 0)
 	{
 		/* pathname, arguments, enviroment */
-		if (execve(args[0], args, environ) == -1)
+		if (execve(path, args, environ) == -1)
 		{
-			perror(args[0]);
+			perror(name);
 			exit(1);
 		}
 	}

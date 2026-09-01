@@ -5,12 +5,13 @@
 #include <string.h>
 #include <sys/wait.h>
 
-void find_path(char *command)
+char *find_path(char *command)
 {
 	char *path;
 	int i = 0;
 	char *path_copy;
 	char *directory;
+	char *concat;
 
 	path = get_path();
 	while (path[i] != '\0')
@@ -18,6 +19,7 @@ void find_path(char *command)
 		i++;
 	}
 
+	/* + 1 for \0 */
 	path_copy = malloc(i + 1);
 	if (path_copy == 0)
 	{
@@ -34,15 +36,24 @@ void find_path(char *command)
 	}
 	path_copy[i] = '\0';
 
+	i = 0;
 	directory = strtok(path_copy, ":");
 	while (directory != NULL)
 	{
-		printf("%s", command);
+		/* + 2 = for / and \0 */
+		concat = malloc(strlen(directory) + strlen(command) + 2);
+
+		strcpy(concat, directory);
+		strcat(concat, "/");
+		strcat(concat, command);
+
+		if (access(concat, F_OK | X_OK) == 0)
+			return (concat);
 
 		directory = strtok(NULL, ":");
 	}
 
-	return;
+	return ("error");
 }
 
 char *get_path(void)
