@@ -90,7 +90,7 @@ char *read_line(void)
 	if (read == -1)
 	{
 		free(input);
-		exit(0);
+		exit(127);
 	}
 
 	return (input);
@@ -115,7 +115,7 @@ char **split_line(char *input)
 	if (array == NULL)
 	{
 		printf("failiure");
-		exit(1); /* exit failure */
+		exit(127); /* exit failure */
 	}
 
 	/* splits input from new line/space */
@@ -167,7 +167,7 @@ int execve_wait(char *path, char **args, char *name)
 		if (execve(path, args, environ) == -1)
 		{
 			perror(name);
-			exit(1);
+			_exit(127);
 		}
 	}
 
