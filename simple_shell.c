@@ -26,21 +26,25 @@ int main(int argc, char **argv)
 
 	while (1)
 	{
-		count++;
-
 		/* checks if interactive file */
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
 
 		input = read_line();
+
+		if (input == NULL)
+			exit(127);
+
+		count++;
 		args = split_line(input);
+	
 
 		compare = strcmp(input, exit_word);
-
 		if (compare == 0)
 		{
 			free(args);
 			free(input);
+			exit(0);
 		}
 
 		if (args[0] != NULL)
@@ -51,7 +55,7 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				path = find_path(args[0]);
+			path = find_path(args[0]);
 				if (path != NULL)
 				{
 					execve_wait(path, args, argv[0]);
@@ -59,7 +63,7 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
+	 				fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
 					free(path);
 				}
 			}
@@ -68,7 +72,7 @@ int main(int argc, char **argv)
 		free(input);
 	}
 	exit(127);
-	return (0);
+	return (127);
 }
 
 /**
@@ -89,7 +93,7 @@ char *read_line(void)
 	if (read == -1)
 	{
 		free(input);
-		exit(0);
+		return(NULL);
 	}
 
 	return (input);
