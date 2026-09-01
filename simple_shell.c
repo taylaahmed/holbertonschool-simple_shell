@@ -31,9 +31,14 @@ int main(int argc, char **argv)
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
 
-		/* call functions */
 		input = read_line();
 		args = split_line(input);
+
+		compare = strcmp(input, exit_word);
+
+		if (compare == 0)
+			exit(0);
+		
 		if (args[0] != NULL)
 		{
 			if (access(args[0], F_OK | X_OK) == 0)
@@ -43,18 +48,19 @@ int main(int argc, char **argv)
 			else
 			{
 				path = find_path(args[0]);
-				execve_wait(path, args, argv[0]);
+				if (path != NULL)
+				{
+					execve_wait(path, args, argv[0]);
+				}
+				else
+				{
+					perror(argv[0]);
+					free(path);
+				}
 			}
 	
 		}
 		
-		compare = strcmp(input, exit_word);
-
-		if (compare == 0)
-			exit(0);
-
-		/* check if command is empty string/null, call execve func */
-
 		free(args);
 		free(input);
 	}
@@ -152,7 +158,7 @@ int execve_wait(char *path, char **args, char *name)
 	/* execve */
 	else if (child_pid == 0)
 	{
-		/* pathname, arguments, enviroment */
+		/* pathname, arguments, envioroment */
 		if (execve(path, args, environ) == -1)
 		{
 			perror(name);

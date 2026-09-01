@@ -53,7 +53,7 @@ char *find_path(char *command)
 		directory = strtok(NULL, ":");
 	}
 
-	return ("error");
+	return (NULL);
 }
 
 char *get_path(void)
@@ -72,31 +72,4 @@ char *get_path(void)
 		env++;
 	}
 	return (NULL);
-}
-
-
-int compare_string(const char *env_path, const char *path)
-{
-	int i = 0;
-
-	printf("%s\n", path);
-	printf("%s\n", env_path);
-
-	/* compare chars one by one */
-	while (path[i] != '\0')
-	{
-		if (env_path[i] != path[i])
-		{
-			return (0);
-		}
-		i++;
-	}
-
-	/* if other chars after keyword, not correct */
-	if (env_path[i] == '\n' || env_path[i] == '\0')
-	{
-		return (1);
-	}
-
-	return (0);
 }
