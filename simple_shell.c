@@ -52,8 +52,7 @@ int main(int argc, char **argv)
 			{
 				if (access(args[0], F_OK | X_OK) == 0)
 				{
-					execve_wait(args[0], args, argv[0]);
-					status = 0;
+					status = execve_wait(args[0], args, argv[0]);
 				}
 				else
 				{
@@ -186,7 +185,7 @@ int execve_wait(char *path, char **args, char *name)
 		wait(&status);
 
 		if (WIFEXITED(status))
-			status = (WIFEXITED(status));
+			return (WIFEXITED(status));
 	}
-	return (status);
+	return (0);
 }
