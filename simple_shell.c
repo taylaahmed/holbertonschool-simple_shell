@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 		{
 			free(args);
 			free(input);
-			exit(0);
+			_exit(127);
 		}
 
 		if (args[0] != NULL)
@@ -90,7 +90,7 @@ char *read_line(void)
 	if (read == -1)
 	{
 		free(input);
-		exit(127);
+		_exit(127);
 	}
 
 	return (input);
@@ -167,7 +167,7 @@ int execve_wait(char *path, char **args, char *name)
 		if (execve(path, args, environ) == -1)
 		{
 			perror(name);
-			_exit(127);
+			exit(1);
 		}
 	}
 
