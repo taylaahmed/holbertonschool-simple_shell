@@ -17,15 +17,17 @@ int main(int argc, char **argv)
 	char *input, **args, *path;
 	char *exit_word = "exit";
 	int compare;
+	int status = 0, count = 0;
+
 	(void)argc;
-
-
 
 	/* if SIG_IGN, then signal is ignored */
 	signal(SIGINT, SIG_IGN);
 
 	while (1)
 	{
+		count++;
+
 		/* checks if interactive file */
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
@@ -58,13 +60,15 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					perror(argv[0]);
+					fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
+					status = 127;
 					free(path);
 				}
 			}
 		}
 		free(args);
 		free(input);
+		exit(status);
 	}
 	return (0);
 }
