@@ -35,20 +35,20 @@ int main(int argc, char **argv)
 		count++;
 		args = split_line(input);
 
-		if (args[0] == NULL)
-			exit(status);
-
-		if (strcmp(input, exit_word) == 0)
+		if (args[0] != NULL)
 		{
-			free(args);
-			free(input);
-			exit(status);
-		}
+			if (strcmp(input, exit_word) == 0)
+			{
+				free(args);
+				free(input);
+				exit(status);
+			}
 
-		if (strcmp(args[0], "env") == 0)
-			print_enviroment();
-		else if (args[0] != NULL)
+			if (strcmp(args[0], "env") == 0)
+				print_enviroment();
+
 			call_path_execve(args, argv[0], count, status);
+		}
 
 		free(args);
 		free(input);
