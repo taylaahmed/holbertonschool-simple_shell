@@ -21,13 +21,11 @@ int main(int argc, char **argv)
 	int count = 0, status = 0;
 	(void)argc;
 
-	/* if SIG_IGN, then signal is ignored */
-	signal(SIGINT, SIG_IGN);
+	signal(SIGINT, SIG_IGN); /* if SIG_IGN, signal is ignored */
 
 	while (1)
 	{
-		/* checks if interactive file */
-		if (isatty(STDIN_FILENO))
+		if (isatty(STDIN_FILENO)) /*interactive file */
 			printf("($) ");
 
 		input = read_line();
@@ -37,6 +35,9 @@ int main(int argc, char **argv)
 		count++;
 		args = split_line(input);
 
+		if (args[0] == NULL)
+			exit(status);
+
 		if (strcmp(input, exit_word) == 0)
 		{
 			free(args);
@@ -45,13 +46,10 @@ int main(int argc, char **argv)
 		}
 
 		if (strcmp(args[0], "env") == 0)
-		{
 			print_enviroment();
-		}
 		else if (args[0] != NULL)
-		{
 			call_path_execve(args, argv[0], count, status);
-		}
+
 		free(args);
 		free(input);
 	}
