@@ -37,7 +37,6 @@ int main(int argc, char **argv)
 		count++;
 		args = split_line(input);
 
-		/* exit on 'exit' */
 		if (strcmp(input, exit_word) == 0)
 		{
 			free(args);
@@ -45,21 +44,17 @@ int main(int argc, char **argv)
 			exit(status);
 		}
 
-		/* calling function env vs. path */
 		if (strcmp(args[0], "env") == 0)
 		{
-			/* printing enviroment - specific */
 			print_enviroment();
 		}
 		else if (args[0] != NULL)
 		{
-			/* for all other valid commands find executable */
 			call_path_execve(args, argv[0], count, status);
 		}
 		free(args);
 		free(input);
 	}
-	/* return the correct exit code */
 	return (status);
 }
 
@@ -77,7 +72,7 @@ int call_path_execve(char **args, char *name, int count, int status)
 {
 	char *path;
 
-	/* checking if input command starts with / */ 
+	/* checking if input command starts with / */
 	if (strchr(args[0], '/') != NULL)
 	{
 		/* checking if that command is openable and executable */

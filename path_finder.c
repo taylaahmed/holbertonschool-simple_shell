@@ -34,7 +34,7 @@ char *find_path(char *command)
 		strcpy(concat, directory);
 		strcat(concat, "/");
 		strcat(concat, command);
-		
+
 		/* checks if concat is a openable and executable command */
 		if (access(concat, F_OK | X_OK) == 0)
 		{
