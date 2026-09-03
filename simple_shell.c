@@ -8,17 +8,17 @@
 
 /**
  * main - reads input and sends calls other functions.
+ * @argc: count argument of input
+ * @argv: recieving input arguments
  *
  * Return: 0 on sucess
  */
 
 int main(int argc, char **argv)
 {
-	char *input, **args, *path;
+	char *input, **args;
 	char *exit_word = "exit";
-	int compare;
-	int count = 0;
-	int status = 0;
+	int compare, count = 0, status = 0;
 	(void)argc;
 
 	/* if SIG_IGN, then signal is ignored */
@@ -31,13 +31,12 @@ int main(int argc, char **argv)
 			printf("($) ");
 
 		input = read_line();
-
 		if (input == NULL)
 			exit(status);
 
 		count++;
 		args = split_line(input);
-	
+
 		compare = strcmp(input, exit_word);
 		if (compare == 0)
 		{
@@ -47,40 +46,55 @@ int main(int argc, char **argv)
 		}
 
 		if (strcmp(args[0], "env") == 0)
-		{
 			print_enviroment();
-		} 
 		else if (args[0] != NULL)
-		{
-			if (strchr(args[0], '/') != NULL)
-			{
-				if (access(args[0], F_OK | X_OK) == 0)
-				{
-					status = execve_wait(args[0], args, argv[0]);
-				}
-				else
-				{
-					fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
-					status = 127;
-				}
-			}
-			else
-			{
-			path = find_path(args[0]);
-				if (path != NULL)
-				{
-					status = execve_wait(path, args, argv[0]);
-					free(path);
-				}
-				else
-				{
-	 				fprintf(stderr, "%s: %d: %s: not found\n", argv[0], count, args[0]);
-					status = 127;
-				}
-			}
-		}
+			call_path_execve(args, argv[0], count, status);
+
 		free(args);
 		free(input);
+	}
+	return (status);
+}
+
+/**
+ * call_path_execve - check execute get_path or execve_wait
+ * @args: arguments inputed
+ * @name: argv[0]
+ * @count: number of commands executed in shell
+ * @status: exit code
+ *
+ * Return: status
+ */
+
+int call_path_execve(char **args, char *name, int count, int status)
+{
+	char *path;
+
+	if (strchr(args[0], '/') != NULL)
+	{
+		if (access(args[0], F_OK | X_OK) == 0)
+		{
+			status = execve_wait(args[0], args, name);
+		}
+		else
+		{
+			fprintf(stderr, "%s: %d: %s: not found\n", name, count, args[0]);
+			status = 127;
+		}
+	}
+	else
+	{
+		path = find_path(args[0]);
+		if (path != NULL)
+		{
+			status = execve_wait(path, args, name);
+			free(path);
+		}
+		else
+		{
+			fprintf(stderr, "%s: %d: %s: not found\n", name, count, args[0]);
+			status = 127;
+		}
 	}
 	return (status);
 }
@@ -103,7 +117,7 @@ char *read_line(void)
 	if (read == -1)
 	{
 		free(input);
-		return(NULL);
+		return (NULL);
 	}
 
 	return (input);
@@ -147,49 +161,4 @@ char **split_line(char *input)
 	array[index] = NULL;
 	return (array);
 
-}
-
-/**
- * execve_wait - forks program into parent and child,
- * having the option to call other functions or wait
- * @args: the split strings in each index
- *
- * Return: 0 on sucess
- */
-
-int execve_wait(char *path, char **args, char *name)
-{
-	pid_t child_pid;
-	int status = 0;
-
-	/* splts into 2 copies */
-	child_pid = fork();
-
-	/* fork fails */
-	if (child_pid == -1)
-	{
-		perror(name);
-		return (1);
-	}
-
-	/* execve */
-	else if (child_pid == 0)
-	{
-		/* pathname, arguments, envioroment */
-		if (execve(path, args, environ) == -1)
-		{
-			perror(name);
-			_exit(127);
-		}
-	}
-
-	/* parent runs wait here */
-	else
-	{
-		wait(&status);
-
-		if (WIFEXITED(status))
-			return (WEXITSTATUS(status));
-	}
-	return (status);
 }

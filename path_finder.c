@@ -5,41 +5,19 @@
 #include <string.h>
 #include <sys/wait.h>
 
+/**
+ * find_path - gets path and compare to command
+ * @command: input by user
+ *
+ * Return: concated string or NULL
+ */
+
 char *find_path(char *command)
 {
-	char *path;
-	int i = 0;
-	char *path_copy;
-	char *directory;
-	char *concat;
+	char *path_copy, *directory, *concat;
 
-	path = get_path();
+	path_copy = path_copier();
 
-	if (path == NULL || path[i] == '\0')
-		return (NULL);
-
-	while (path[i] != '\0')
-	{
-		i++;
-	}
-
-	/* + 1 for \0 */
-	path_copy = malloc(i + 1);
-	if (path_copy == 0)
-	{
-		return (NULL);
-	}
-
-	i = 0;
-
-	while (path[i] != '\0')
-	{
-		path_copy[i] = path[i];
-		i++;
-	}
-	path_copy[i] = '\0';
-
-	i = 0;
 	directory = strtok(path_copy, "=:");
 	while (directory != NULL)
 	{
@@ -69,9 +47,57 @@ char *find_path(char *command)
 	return (NULL);
 }
 
+/**
+ * path_copier - creates copy of path to new string
+ *
+ * Return: NULL or copied string path
+ */
+
+char *path_copier(void)
+{
+	char *path;
+	char *path_copy;
+	int i = 0;
+
+	path = get_path();
+
+	if (path == NULL || path[i] == '\0')
+		return (NULL);
+
+	while (path[i] != '\0')
+	{
+		i++;
+	}
+
+	/* + 1 for \0 */
+	path_copy = malloc(i + 1);
+	if (path_copy == 0)
+	{
+		return (NULL);
+	}
+
+	i = 0;
+
+	while (path[i] != '\0')
+	{
+		path_copy[i] = path[i];
+		i++;
+	}
+	path_copy[i] = '\0';
+
+	return (path_copy);
+}
+
+/**
+ * get_path - recieve path from env
+ *
+ * Return: path string
+ */
+
 char *get_path(void)
 {
 	char **env;
+
 	env = environ;
 
 	if (env == NULL)
@@ -81,13 +107,19 @@ char *get_path(void)
 	{
 		if (strncmp(*env, "PATH=", 5) == 0)
 		{
-			return(*env);
+			return (*env);
 		}
-		
+
 		env++;
 	}
 	return (NULL);
 }
+
+/**
+ * print_enviroment - printing specific enviroment
+ *
+ * Return: nothing
+ */
 
 void print_enviroment(void)
 {
@@ -104,5 +136,4 @@ void print_enviroment(void)
 		printf("%s\n", env[i]);
 		i++;
 	}
-	return;
 }
