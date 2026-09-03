@@ -18,6 +18,7 @@ char *find_path(char *command)
 
 	path_copy = path_copier();
 
+	/* splitting string into tokens by = and : */
 	directory = strtok(path_copy, "=:");
 	while (directory != NULL)
 	{
@@ -29,10 +30,12 @@ char *find_path(char *command)
 			return (NULL);
 		}
 
+		/* concatenating full path + command */
 		strcpy(concat, directory);
 		strcat(concat, "/");
 		strcat(concat, command);
-
+		
+		/* checks if concat is a openable and executable command */
 		if (access(concat, F_OK | X_OK) == 0)
 		{
 			free(path_copy);
@@ -40,6 +43,7 @@ char *find_path(char *command)
 		}
 
 		free(concat);
+		/* loops to next iteration of directory */
 		directory = strtok(NULL, ":");
 	}
 
@@ -59,6 +63,7 @@ char *path_copier(void)
 	char *path_copy;
 	int i = 0;
 
+	/* recieve general path from environ */
 	path = get_path();
 
 	if (path == NULL || path[i] == '\0')
@@ -78,6 +83,7 @@ char *path_copier(void)
 
 	i = 0;
 
+	/* path to path_copy as strtok is destructive */
 	while (path[i] != '\0')
 	{
 		path_copy[i] = path[i];

@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
 	char *input, **args;
 	char *exit_word = "exit";
-	int compare, count = 0, status = 0;
+	int count = 0, status = 0;
 	(void)argc;
 
 	/* if SIG_IGN, then signal is ignored */
@@ -37,22 +37,29 @@ int main(int argc, char **argv)
 		count++;
 		args = split_line(input);
 
-		compare = strcmp(input, exit_word);
-		if (compare == 0)
+		/* exit on 'exit' */
+		if (strcmp(input, exit_word) == 0)
 		{
 			free(args);
 			free(input);
 			exit(status);
 		}
 
+		/* calling function env vs. path */
 		if (strcmp(args[0], "env") == 0)
+		{
+			/* printing enviroment - specific */
 			print_enviroment();
+		}
 		else if (args[0] != NULL)
+		{
+			/* for all other valid commands find executable */
 			call_path_execve(args, argv[0], count, status);
-
+		}
 		free(args);
 		free(input);
 	}
+	/* return the correct exit code */
 	return (status);
 }
 
@@ -70,8 +77,10 @@ int call_path_execve(char **args, char *name, int count, int status)
 {
 	char *path;
 
+	/* checking if input command starts with / */ 
 	if (strchr(args[0], '/') != NULL)
 	{
+		/* checking if that command is openable and executable */
 		if (access(args[0], F_OK | X_OK) == 0)
 		{
 			status = execve_wait(args[0], args, name);
@@ -82,9 +91,11 @@ int call_path_execve(char **args, char *name, int count, int status)
 			status = 127;
 		}
 	}
+	/* all other inputs that don't start with / */
 	else
 	{
 		path = find_path(args[0]);
+		/* if find_path returns executable path */
 		if (path != NULL)
 		{
 			status = execve_wait(path, args, name);
