@@ -14,6 +14,7 @@ char **split_line(char *input);
 int execve_wait(char *path, char **args, char *name);
 char *find_path(char *command);
 char *get_path(void);
+void print_enviroment(void);
 /*int compare_string(const char *env_path, const char *path); */
 
 #endif

@@ -88,3 +88,21 @@ char *get_path(void)
 	}
 	return (NULL);
 }
+
+void print_enviroment(void)
+{
+	char **env;
+	int i = 0;
+
+	env = environ;
+
+	if (env == NULL)
+		return;
+
+	while (env[i] != NULL)
+	{
+		printf("%s\n", env[i]);
+		i++;
+	}
+	return;
+}

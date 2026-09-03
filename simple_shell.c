@@ -46,7 +46,11 @@ int main(int argc, char **argv)
 			exit(status);
 		}
 
-		if (args[0] != NULL)
+		if (strcmp(args[0], "env") == 0)
+		{
+			print_enviroment();
+		} 
+		else if (args[0] != NULL)
 		{
 			if (strchr(args[0], '/') != NULL)
 			{
