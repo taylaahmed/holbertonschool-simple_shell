@@ -40,7 +40,7 @@ char *find_path(char *command)
 	path_copy[i] = '\0';
 
 	i = 0;
-	directory = strtok(path_copy, ":");
+	directory = strtok(path_copy, "=:");
 	while (directory != NULL)
 	{
 		/* + 2 = for / and \0 */
@@ -81,7 +81,7 @@ char *get_path(void)
 	{
 		if (strncmp(*env, "PATH=", 5) == 0)
 		{
-			return(*env + 5);
+			return(*env);
 		}
 		
 		env++;
