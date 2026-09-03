@@ -1,0 +1,70 @@
+#NAME
+hsh - simple shell
+
+#SYNOPSIS
+hsh
+command | hsh
+
+#DESCRIPTION
+hsh is a command language interpreter that reads and executes commands
+from standard input or from a pipeline, depending on interactive or non-interactive mode.
+
+The shell executes commands through a loop:
+1. Read: Reads a line of input from standard input using getline(). If an end of file condition (Ctrl D) occurs, resources are freed and shell terminates.
+2. Tokenize: Splits the input string into tokens using strtok(), split by whitespace characters (spaces, newlines).
+3. Resolve: Evaluates whether the command corresponds to a built-in function, an explicit file path, or a binary located in directories specified by the path variable.
+4. Fork: Creates a new child process via fork().
+5. Execve: The child runs execve(). 
+6. Wait: The parent process waits for child termination via wait() and returns correct the exit status.
+
+#PATH RESOLUTION
+When a command is supplied without built-in recognition, the shell determines
+execution based on if there is a slash character (/):
+
+Explicit Path: If the command contains a slash (/), it is treated as a direct pathname (eg. /bin/ls). File existence and execution permissions
+are checked directly using access() without consulting PATH.
+
+Command Name: If no slash is present (eg. ls), the shell searches through each directory listed in the colon split path environment variable. If path is empty, or the executable is not found in any listed directory, the command is reported as not found.
+
+#BUILTIN COMMANDS
+####exit
+Terminates the shell process. If no status argument is provided, the shell
+exits with the status of the last executed command.
+
+####env
+Prints all currently exported environment variables in the active process to standard output in the format NAME=value.
+
+#ENVIRONMENT
+hsh accesses environment definitions via the external global variable environ (extern char environ) declared in main.h.
+
+#EXIT STATUS
+hsh returns the following exit codes:
+- 0: Success on normal execution or built-in operation.
+- 127: Command not found or executable path cannot be resolved.
+- 126: Permission denied when attempting to execute an existing file.
+- 2: Built-in error or incorrect command usage. 
+
+Otherwise, exit code of last executed child process, extracted through WEXITSTATUS and returned.
+
+#ERRORS/DIAGNOSTICS
+<program_name>: <line_count>: <command>: not found
+
+Example diagnostic:
+./hsh: 1: /ls: not found
+
+#EXAMPLES
+#### Interactive mode
+./hsh
+($) /bin/ls
+AUTHORS    execute.c  main.c  man_1_simple_shell  simple_shell.c
+README.md  hsh        main.h  path_finder.c
+($) exit
+
+#### Non-interactive mode
+echo "/bin/ls" | ./hsh
+AUTHORS    execute.c  main.c  man_1_simple_shell  simple_shell.c
+README.md  hsh        main.h  path_finder.c
+
+#AUTHORS
+Tayla Ahmed
+Kalyani Lao-Khiev
