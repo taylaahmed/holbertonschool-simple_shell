@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 			if (strcmp(args[0], "env") == 0)
 				print_enviroment();
 
-			call_path_execve(args, argv[0], count, status);
+			status = call_path_execve(args, argv[0], count, status);
 		}
 
 		free(args);
